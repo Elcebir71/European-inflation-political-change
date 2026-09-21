@@ -10,9 +10,9 @@ This project studies statistical associations between economic and migration-rel
 
 ## Project scope
 
-- 63 election observations
+- 79 election observations
 - 28 European countries
-- 31 observations with a government change
+- 42 observations with a government change
 - Election data from ParlGov
 - European inflation, unemployment, GDP and migration data from Eurostat
 - UK GDP data from the Office for National Statistics (ONS)
@@ -88,32 +88,34 @@ Four logistic-regression specifications are estimated:
 
 ## Final model results
 
-All four models use the complete dataset of 63 election observations.
+All four models use the complete dataset of 79 election observations.
 
-| Model | N | Government changes | AIC | Pseudo-R² |
-|---|---:|---:|---:|---:|
-| V1 | 63 | 31 | 91.32 | 0.000 |
-| V2 | 63 | 31 | 94.40 | 0.011 |
-| V3 | 63 | 31 | 98.27 | 0.012 |
-| V4 | 63 | 31 | 96.32 | 0.011 |
+| Model | N | Government changes | AIC |
+|---|---:|---:|---:|
+| V1 | 79 | 42 | 113.08 |
+| V2 | 79 | 42 | 114.84 |
+| V3 | 79 | 42 | 117.26 |
+| V4 | 79 | 42 | 116.45 |
+
+AIC values are reported from the fitted model artifacts. They are used for relative comparison of models fitted to the same dataset; AIC is not a percentage or accuracy measure.
 
 ### Main estimates
 
 | Model | Variable | Odds ratio | 95% CI | p-value |
 |---|---|---:|---|---:|
-| V1 | Inflation | 0.9964 | 0.8780–1.1307 | 0.9553 |
-| V2 | Inflation | 1.0076 | 0.8801–1.1536 | 0.9129 |
-| V2 | Unemployment | 1.0196 | 0.9146–1.1367 | 0.7262 |
-| V2 | GDP growth | 1.1295 | 0.8474–1.5055 | 0.4061 |
-| V3 | Inflation | 1.0546 | 0.9726–1.1422 | 0.7267 |
-| V3 | Asylum | 0.9998 | 0.9967–1.0029 | 0.8863 |
-| V3 | Ukraine temporary protection | 1.0004 | 0.9974–1.0039 | 0.7446 |
-| V4 | Inflation | 1.0256 | 0.8547–1.2308 | 0.7855 |
-| V4 | Migration-pressure index | 0.8772 | 0.3567–1.5750 | 0.7755 |
+| V1 | Inflation | 1.0203 | 0.9105–1.1433 | 0.7297 |
+| V2 | Inflation | 1.0243 | 0.9067–1.1571 | 0.6996 |
+| V2 | Unemployment | 1.0007 | 0.9012–1.1111 | 0.9898 |
+| V2 | GDP growth | 1.2021 | 0.9026–1.6009 | 0.2080 |
+| V3 | Inflation | 0.9203 | 0.7415–1.1422 | 0.4511 |
+| V3 | Asylum | 1.0000 | 0.9971–1.0028 | 0.9774 |
+| V3 | Ukraine temporary protection | 1.0008 | 0.9995–1.0022 | 0.2386 |
+| V4 | Inflation | 0.9965 | 0.8571–1.1586 | 0.9639 |
+| V4 | Migration-pressure index | 1.2868 | 0.5762–2.8737 | 0.5384 |
 
 ## Interpretation
 
-Across the 63 election observations in 28 European countries, the fitted logistic-regression models did not detect statistically significant associations between inflation, migration-pressure measures, and the occurrence of government change.
+Across the 79 election observations in 28 European countries, the fitted logistic-regression models did not detect statistically significant associations between inflation, migration-pressure measures, and the occurrence of government change.
 
 The estimates have relatively wide confidence intervals. Therefore, these results should be interpreted as evidence of limited statistical detectability in this sample, **not** as evidence that inflation, migration, unemployment, or GDP growth have no effect on political outcomes.
 
@@ -196,8 +198,8 @@ The workflow is designed to:
 
 - This is an observational cross-country analysis.
 - Statistical association does not establish causation.
-- The sample contains only 63 election observations.
-- The number of government-change events is 31.
+- The sample contains 79 election observations.
+- The number of government-change events is 42.
 - V3 and V4 include several predictors relative to the sample size.
 - The migration-pressure index combines flow and stock measures and is therefore an analytical composite rather than a direct measure of total migration.
 - Historical macroeconomic data can be revised by statistical agencies.
