@@ -1,6 +1,16 @@
 const $ = (id) => document.getElementById(id);
 const countrySelect = $("countrySelect");
 
+const countryNames = {
+  AT: "Austria", BE: "Belgium", BG: "Bulgaria", HR: "Croatia",
+  CY: "Cyprus", CZ: "Czechia", DK: "Denmark", EE: "Estonia",
+  FI: "Finland", FR: "France", DE: "Germany", GR: "Greece",
+  HU: "Hungary", IE: "Ireland", IT: "Italy", LV: "Latvia",
+  LT: "Lithuania", LU: "Luxembourg", MT: "Malta", NL: "Netherlands",
+  PL: "Poland", PT: "Portugal", RO: "Romania", SK: "Slovakia",
+  SI: "Slovenia", ES: "Spain", SE: "Sweden", GB: "United Kingdom"
+};
+
 const modelDescriptions = {
   V1: "Inflation only",
   V2: "Inflation + unemployment + GDP growth",
@@ -56,7 +66,7 @@ async function loadCountry(code) {
       getJson(`/api/risk/${code}`)
     ]);
     drawChart(series);
-    $("countryMeta").textContent = `Latest panel observation: ${risk.election} · ${series.at(-1)?.month ?? "—"} inflation: ${series.at(-1)?.inflationYoy?.toFixed(2) ?? "—"}%`;
+    $("countryMeta").textContent = `Latest election observation: ${risk.election} · Latest inflation data: ${series.at(-1)?.month ?? "—"} (${series.at(-1)?.inflationYoy?.toFixed(2) ?? "—"}%)`;
 
     $("probabilities").innerHTML = risk.estimatedProbabilities.map(p => {
       const pct = Math.max(0, Math.min(100, Number(p.probability) * 100));
@@ -84,7 +94,7 @@ async function init() {
     ]);
     if (health.placeholderWarning) console.warn("Model placeholder warning reported by API.");
 
-    countrySelect.innerHTML = countries.map(c => `<option value="${c.code}">${c.name} (${c.code})</option>`).join("");
+    countrySelect.innerHTML = countries.map(c => `<option value="${c.code}">${countryNames[c.code] ?? c.name} (${c.code})</option>`).join("");
     countrySelect.addEventListener("change", () => loadCountry(countrySelect.value));
 
     $("models").innerHTML = models.map(m => {
