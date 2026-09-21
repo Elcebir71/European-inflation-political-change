@@ -1,0 +1,24 @@
+# Git & IDE
+.git
+.gitignore
+.vs
+.vscode
+.idea
+
+# .NET build output
+bin/
+obj/
+out/
+
+# Python tarafigi (imaja girmez)
+*.py
+parlgov_elections.csv
+ons_uk_unemployment.csv
+
+# Docker kendisi
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# README'de placeholder uyarisi: gercek artefactlar volume ile gelir
+# Data/ icin karar: placeholder models.json imajda kalir, volume override eder.

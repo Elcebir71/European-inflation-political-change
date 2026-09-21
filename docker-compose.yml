@@ -1,0 +1,24 @@
+# =============================================================================
+# docker-compose.yml — V3.Api yerel/demo orkestrasyonu
+#
+# Kullanim:
+#   1) python data_prep_v2.py   -> models.json / panel_dataset.csv / inflation_series.csv
+#   2) Uc dosyayi ./data/ altina kopyala
+#   3) docker compose up --build
+#   4) http://localhost:8080/api/health
+#
+# data/ klasoru READ-ONLY mount edilir: API runtime'da artefactlari asla
+# degistiremez (models.json'in yanlislikla overwrite edilmesi engellenir).
+# =============================================================================
+services:
+  api:
+    build: .
+    image: v3-api:latest
+    container_name: v3-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/Data:ro
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    restart: unless-stopped
