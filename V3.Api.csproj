@@ -5,14 +5,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>V3.Api</RootNamespace>
-    <!-- Container'da her zaman UTC -->
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Data/ artefactlari publish ciktisina kopyalanir; Docker'da gercek
-         artefactlar read-only volume ile uzerine binilir -->
     <None Update="Data\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="models.json;panel_dataset.csv;inflation_series.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
