@@ -754,8 +754,38 @@ def get_elections() -> pd.DataFrame:
         }]
     )
 
+    # ParlGov's published development/stable data stops at June 2023.
+    # Supplement parliamentary elections that occurred after that cutoff
+    # through 2024-12-31 so the panel does not silently report an old
+    # election as the latest observation. These dates and government-change
+    # flags are project-specific supplements based on official election and
+    # government records; the govt_change definition remains the same as above.
+    post_parlgov_2023_2024 = pd.DataFrame([
+        # country, election date, govt_change
+        ("ES", "2023-07-23", 0),  # Pedro Sánchez / PSOE continued
+        ("LU", "2023-10-08", 1),  # Bettel / DP -> Frieden / CSV
+        ("PL", "2023-10-15", 1),  # Morawiecki / PiS -> Tusk / PO
+        ("SK", "2023-09-30", 1),  # caretaker Odor -> Fico / Smer-SD
+        ("NL", "2023-11-22", 1),  # Rutte / VVD -> Schoof (non-party)
+        ("PT", "2024-03-10", 1),  # Costa / PS -> Montenegro / PSD
+        ("HR", "2024-04-17", 0),  # Plenković / HDZ continued
+        ("BE", "2024-06-09", 1),  # De Croo / Open VLD -> De Wever / N-VA
+        ("FR", "2024-07-07", 1),  # Attal / Renaissance -> Barnier / LR
+        ("AT", "2024-09-29", 0),  # Nehammer / ÖVP -> Stocker / ÖVP
+        ("LT", "2024-10-27", 1),  # Šimonytė / TS-LKD -> Paluckas / LSDP
+        ("BG", "2024-10-27", 1),  # caretaker Glavchev -> Zhelyazkov / GERB
+        ("IE", "2024-11-29", 1),  # Harris / Fine Gael -> Martin / Fianna Fáil
+        ("RO", "2024-12-01", 0),  # Ciolacu / PSD continued
+    ], columns=["country_code", "election_date", "govt_change"])
+    post_parlgov_2023_2024["election_date"] = pd.to_datetime(
+        post_parlgov_2023_2024["election_date"]
+    )
+
     result = election_base[["country_code", "election_date", "govt_change"]].copy()
-    result = pd.concat([result, uk_2024], ignore_index=True)
+    result = pd.concat(
+        [result, post_parlgov_2023_2024, uk_2024],
+        ignore_index=True,
+    )
     result = result.drop_duplicates(
         subset=["country_code", "election_date"], keep="last"
     )
