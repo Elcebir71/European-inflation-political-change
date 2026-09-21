@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>European Inflation & Political Change</title>
+  <meta name="description" content="Interactive dashboard for an observational analysis of inflation, migration pressure, macroeconomic conditions, and government changes across Europe.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="eyebrow">EUROPEAN DATA ANALYSIS · 2015–2024</div>
+      <h1>European Inflation &amp;<br>Political Change</h1>
+      <p class="lede">An observational analysis of inflation, migration pressure, macroeconomic conditions, and government changes across 28 European countries.</p>
+      <div class="hero-meta">
+        <span>63 election observations</span><span>31 government changes</span><span>28 countries</span><span>4 model specifications</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="research card">
+      <div>
+        <div class="section-kicker">Research question</div>
+        <h2>To what extent are the 2021–2023 inflation shock and increased migration pressure associated with subsequent political changes?</h2>
+      </div>
+      <p class="note">The analysis is observational. Model estimates describe associations in the fitted sample; they do not establish causal effects.</p>
+    </section>
+
+    <section class="dashboard-grid">
+      <div class="card chart-card">
+        <div class="card-head">
+          <div>
+            <div class="section-kicker">Country explorer</div>
+            <h2>Inflation over time</h2>
+          </div>
+          <select id="countrySelect" aria-label="Select country"></select>
+        </div>
+        <div id="countryMeta" class="country-meta">Loading country data…</div>
+        <div class="chart-wrap">
+          <svg id="inflationChart" viewBox="0 0 900 330" role="img" aria-label="Inflation chart"></svg>
+        </div>
+        <div class="legend"><span class="dot"></span> HICP annual inflation (%)</div>
+      </div>
+
+      <div class="card probability-card">
+        <div class="section-kicker">Model output</div>
+        <h2>Estimated probability under the fitted model</h2>
+        <p class="muted">These values are model-based estimates for the latest election observation available for the selected country.</p>
+        <div id="probabilities" class="probabilities"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-kicker">Model specifications</div>
+      <h2>Four logistic-regression specifications</h2>
+      <div id="models" class="model-grid"></div>
+    </section>
+
+    <section class="dashboard-grid lower">
+      <div class="card">
+        <div class="section-kicker">Selected observation</div>
+        <h2>Model inputs</h2>
+        <div id="features" class="feature-grid"></div>
+      </div>
+      <div class="card">
+        <div class="section-kicker">Interpretation</div>
+        <h2>What the results show</h2>
+        <p>Across the 63 election observations, the fitted models did not detect statistically significant associations between inflation, migration-pressure measures, and government change.</p>
+        <p>The estimates have relatively wide confidence intervals. With 31 government-change events, the sample has limited statistical power for detecting modest associations.</p>
+        <p class="note">This dashboard presents the fitted model output rather than a forecast, causal estimate, or real-world political-risk score.</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>Sources: Eurostat · UK ONS · ParlGov</span>
+      <a href="https://github.com/Elcebir71/European-inflation-political-change" target="_blank" rel="noreferrer">View source on GitHub ↗</a>
+    </footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
