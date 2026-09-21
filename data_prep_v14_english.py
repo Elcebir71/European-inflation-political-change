@@ -776,6 +776,8 @@ def get_elections() -> pd.DataFrame:
         ("BG", "2024-10-27", 1),  # caretaker Glavchev -> Zhelyazkov / GERB
         ("IE", "2024-11-29", 1),  # Harris / Fine Gael -> Martin / Fianna Fáil
         ("RO", "2024-12-01", 0),  # Ciolacu / PSD continued
+        ("MT", "2022-03-26", 0),  # Abela / Labour continued
+        ("SI", "2022-04-24", 1),  # Janša / SDS -> Golob / GS
     ], columns=["country_code", "election_date", "govt_change"])
     post_parlgov_2023_2024["election_date"] = pd.to_datetime(
         post_parlgov_2023_2024["election_date"]
