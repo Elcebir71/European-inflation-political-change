@@ -11,6 +11,16 @@ const countryNames = {
   SI: "Slovenia", ES: "Spain", SE: "Sweden", GB: "United Kingdom"
 };
 
+const latestElectionInAnalysisWindow = {
+  AT: "2024-09-29", BE: "2024-06-09", BG: "2024-10-27", HR: "2024-04-17",
+  CY: "2021-05-30", CZ: "2021-10-09", DK: "2022-11-01", EE: "2023-03-05",
+  FI: "2023-04-02", FR: "2024-07-07", DE: "2021-09-26", GR: "2023-06-25",
+  HU: "2022-04-03", IE: "2024-11-29", IT: "2022-09-25", LV: "2022-10-01",
+  LT: "2024-10-27", LU: "2023-10-08", MT: "2022-03-26", NL: "2023-11-22",
+  PL: "2023-10-15", PT: "2024-03-10", RO: "2024-12-01", SK: "2023-09-30",
+  SI: "2022-04-24", ES: "2023-07-23", SE: "2022-09-11", GB: "2024-07-04"
+};
+
 const modelDescriptions = {
   V1: "Inflation only",
   V2: "Inflation + unemployment + GDP growth",
@@ -66,7 +76,9 @@ async function loadCountry(code) {
       getJson(`/api/risk/${code}`)
     ]);
     drawChart(series);
-    $("countryMeta").textContent = `Latest election observation: ${risk.election} · Latest inflation data: ${series.at(-1)?.month ?? "—"} (${series.at(-1)?.inflationYoy?.toFixed(2) ?? "—"}%)`;
+    const latestElection = latestElectionInAnalysisWindow[code] ?? risk.election;
+    const modelObservation = risk.election;
+    $("countryMeta").textContent = `Latest election in analysis window: ${latestElection} · Model observation: ${modelObservation} · Latest inflation data: ${series.at(-1)?.month ?? "—"} (${series.at(-1)?.inflationYoy?.toFixed(2) ?? "—"}%)`;
 
     $("probabilities").innerHTML = risk.estimatedProbabilities.map(p => {
       const pct = Math.max(0, Math.min(100, Number(p.probability) * 100));
