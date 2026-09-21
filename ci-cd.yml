@@ -3,42 +3,41 @@ name: ci-cd
 on:
   push:
     branches: [main]
-    paths: ["v3-api/**"]
+    paths:
+      - "**"
+      - "!README.md"
   pull_request:
     branches: [main]
-    paths: ["v3-api/**"]
+    paths:
+      - "**"
+      - "!README.md"
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/v3-api
 
 jobs:
-  # ---------- 1) Build + temel dogrulama ----------
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: .NET 8 kur
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
-      - name: Restore & Build
-        working-directory: v3-api
-        run: |
-          dotnet restore
-          dotnet build -c Release --no-restore
+      - name: Restore
+        run: dotnet restore
 
-      # test projesi eklenince: dotnet test
-      # artefact dogrulamasi: placeholder models.json imajda PATLAR mi?
-      - name: Placeholder katsayi uyarisi (bilgilendirme)
-        working-directory: v3-api
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Check model artifacts
         run: |
-          if grep -q '"intercept": 0.0' Data/models.json; then
-            echo "::warning:: models.json hala PLACEHOLDER - gercek katsayilar icin data_prep_v2.py koş"
+          if grep -q '"intercept": 0.0' models.json; then
+            echo "::warning::models.json may contain placeholder coefficients."
           fi
 
-  # ---------- 2) Docker imaji (PR'da sadece build, main'de push) ----------
   docker:
     needs: build
     runs-on: ubuntu-latest
@@ -48,10 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: QEMU + Buildx
+      - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: GHCR login
+      - name: Login to GHCR
         if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
@@ -59,10 +58,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build (ve main'de push)
+      - name: Build and optionally push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: v3-api
+          context: .
           push: ${{ github.event_name == 'push' }}
           tags: |
             ${{ env.IMAGE }}:latest
@@ -70,7 +69,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ---------- 3) Deploy: Azure Container Apps (main push'larinda) ----------
   deploy:
     if: github.event_name == 'push'
     needs: docker
@@ -84,11 +82,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Container Apps'e deploy et
+      - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
           containerAppName: v3-api
           resourceGroup: rg-v3-project
           imageToDeploy: ${{ env.IMAGE }}:${{ github.sha }}
-          # Artefactlari Container Apps'e Volume/secret olarak bagla:
-          # AZURE_STORAGE_* + mount ayarlari Azure tarafinda tanimli olmali.
