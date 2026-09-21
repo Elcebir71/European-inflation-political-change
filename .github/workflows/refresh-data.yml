@@ -1,0 +1,30 @@
+name: refresh-data
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "data_prep_v14_english.py"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install pandas numpy requests statsmodels matplotlib
+      - name: Refresh analysis outputs
+        run: python data_prep_v14_english.py
+      - name: Commit refreshed artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add panel_dataset.csv inflation_series.csv models.json
+          git diff --cached --quiet || git commit -m "Refresh analysis outputs [skip ci]"
+          git push
