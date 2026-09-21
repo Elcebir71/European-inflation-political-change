@@ -22,7 +22,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements_project.txt
+        run: pip install pandas numpy requests statsmodels matplotlib
 
       - name: Regenerate final analytical artifacts
         run: python data_prep_v14_english.py
