@@ -759,7 +759,8 @@ def get_elections() -> pd.DataFrame:
     # through 2024-12-31 so the panel does not silently report an old
     # election as the latest observation. These dates and government-change
     # flags are project-specific supplements based on official election and
-    # government records; the govt_change definition remains the same as above.
+    # government records; the audit is intentionally frozen at the 2024
+    # analysis-window boundary. The govt_change definition remains the same as above.
     post_parlgov_2023_2024 = pd.DataFrame([
         # country, election date, govt_change
         ("ES", "2023-07-23", 0),  # Pedro Sánchez / PSOE continued
