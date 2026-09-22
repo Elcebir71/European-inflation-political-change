@@ -65,7 +65,8 @@
 
     <section class="card map-card">
       <div class="section-kicker">Political-change risk across Europe</div>
-      <h2>Estimated probability by country (V1 model)</h2>
+      <h2>Estimated probability by country (<span id="mapModelLabel">V1</span> model)</h2>
+      <div id="mapModelToggle" class="map-toggle" role="group" aria-label="Choose model"></div>
       <p class="muted">Each dot is a country, colored by the V1 model's estimated probability of government change at its latest election in the panel. Click a dot to load that country above. Positions are schematic (by capital city), not a precise map projection.</p>
       <svg id="europeMap" viewBox="0 0 820 620" role="img" aria-label="Map of European countries colored by estimated political-change risk"></svg>
       <div class="map-legend">
