@@ -139,16 +139,16 @@ function project([lon, lat]) {
 }
 
 // Green (low) -> amber -> red (high), for a 0..1 probability.
+
 function riskColor(p) {
   if (p === null || Number.isNaN(p)) return "#475569"; // unknown -> grey
-  const stops = [[0.34, 211, 153], [0.98, 191, 36], [0.97, 113, 113]];
+  const stops = [[52, 211, 153], [251, 191, 36], [248, 113, 113]]; // green -> amber -> red, all 0-255
   const t = Math.max(0, Math.min(1, p)) * 2;
   const [c0, c1] = t <= 1 ? [stops[0], stops[1]] : [stops[1], stops[2]];
   const f = t <= 1 ? t : t - 1;
   const mix = (a, b) => Math.round(a + (b - a) * f);
-  return `rgb(${mix(Math.round(c0[0]*255), Math.round(c1[0]*255))},${mix(Math.round(c0[1]*255), Math.round(c1[1]*255))},${mix(Math.round(c0[2]*255), Math.round(c1[2]*255))})`;
+  return `rgb(${mix(c0[0], c1[0])},${mix(c0[1], c1[1])},${mix(c0[2], c1[2])})`;
 }
-
 async function loadRiskMap(selectedCode) {
   const svg = $("europeMap");
   if (!svg) return; // section not present in index.html yet
