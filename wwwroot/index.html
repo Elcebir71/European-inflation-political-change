@@ -57,6 +57,27 @@
       <h2>Four logistic-regression specifications</h2>
       <div id="models" class="model-grid"></div>
     </section>
+    <!--
+  Insert this block into wwwroot/index.html, right after the closing </section>
+  of the "Model specifications" card (the one containing #models) and before
+  the "dashboard-grid lower" section. Nothing else in index.html needs to change.
+-->
+
+    <section class="card map-card">
+      <div class="section-kicker">Political-change risk across Europe</div>
+      <h2>Estimated probability by country (V1 model)</h2>
+      <p class="muted">Each dot is a country, colored by the V1 model's estimated probability of government change at its latest election in the panel. Click a dot to load that country above. Positions are schematic (by capital city), not a precise map projection.</p>
+      <svg id="europeMap" viewBox="0 0 820 620" role="img" aria-label="Map of European countries colored by estimated political-change risk"></svg>
+      <div class="map-legend">
+        <span>Lower</span><div class="grad"></div><span>Higher</span>
+      </div>
+    </section>
+    
+    <section class="card coef-card">
+      <div class="section-kicker">Model coefficients</div>
+      <h2>What drives each model's estimate</h2>
+      <div id="coefficients"></div>
+    </section>
 
     <section class="dashboard-grid lower">
       <div class="card">
