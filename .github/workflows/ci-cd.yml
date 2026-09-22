@@ -13,8 +13,8 @@ on:
       - "!README.md"
 
 env:
-  IMAGE: ghcr.io/${{ github.repository_owner }}/v3-api
-
+  IMAGE: ghcr.io/elcebir71/v3-api
+  
 jobs:
   build:
     runs-on: ubuntu-latest
