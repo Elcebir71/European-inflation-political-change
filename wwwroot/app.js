@@ -82,6 +82,12 @@ async function getJson(url) {
     .map-legend { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--muted, #8a9bb8); }
     .map-legend .grad { flex: 1; height: 8px; border-radius: 999px;
       background: linear-gradient(90deg, #34d399, #fbbf24, #f87171); max-width: 220px; }
+    .map-toggle { display: flex; gap: 6px; margin: 10px 0; }
+    .map-toggle-btn { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+      color: var(--muted, #8a9bb8); padding: 5px 12px; border-radius: 999px; font-size: 12px;
+      cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+    .map-toggle-btn:hover { border-color: rgba(255,255,255,.3); }
+    .map-toggle-btn.active { background: #22d3ee; border-color: #22d3ee; color: #0b1220; font-weight: 600; }
     .coef-row { display: grid; grid-template-columns: 190px 1fr; align-items: center; gap: 10px; margin: 10px 0; }
     .coef-row .label { font-size: 13px; color: var(--muted, #8a9bb8); }
     .coef-bars { position: relative; height: 26px; background: rgba(255,255,255,.05); border-radius: 6px; }
@@ -149,33 +155,62 @@ function riskColor(p) {
   const mix = (a, b) => Math.round(a + (b - a) * f);
   return `rgb(${mix(c0[0], c1[0])},${mix(c0[1], c1[1])},${mix(c0[2], c1[2])})`;
 }
+let riskCache = []; // [{code, probsByModel: {V1: 0.5, V2: ...}}]
+let currentMapModel = "V1";
+
+function renderMapToggle(models) {
+  const box = $("mapModelToggle");
+  if (!box) return;
+  box.innerHTML = models.map(m =>
+    `<button type="button" class="map-toggle-btn${m.name === currentMapModel ? " active" : ""}" data-model="${m.name}">${m.name}</button>`
+  ).join("");
+  box.querySelectorAll(".map-toggle-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentMapModel = btn.getAttribute("data-model");
+      box.querySelectorAll(".map-toggle-btn").forEach(b => b.classList.toggle("active", b === btn));
+      $("mapModelLabel").textContent = currentMapModel;
+      paintMap(countrySelect.value);
+    });
+  });
+}
 async function loadRiskMap(selectedCode) {
   const svg = $("europeMap");
-  if (!svg) return; // section not present in index.html yet
+  if (!svg) return;
   const codes = Object.keys(countryCoords);
   const settled = await Promise.allSettled(codes.map(code => getJson(`/api/risk/${code}`)));
 
+  riskCache = codes.map((code, i) => {
+    const result = settled[i];
+    const probsByModel = {};
+    if (result.status === "fulfilled") {
+      (result.value.estimatedProbabilities || []).forEach(p => {
+        if (p.probability !== null && p.probability !== undefined) probsByModel[p.model] = Number(p.probability);
+      });
+    }
+    return { code, probsByModel };
+  });
+
+  paintMap(selectedCode);
+}
+
+function paintMap(selectedCode) {
+  const svg = $("europeMap");
+  if (!svg) return;
   let markup = "";
-  settled.forEach((result, i) => {
-    const code = codes[i];
-    const coord = countryCoords[code];
+  riskCache.forEach((entry, i) => {
+    const coord = countryCoords[entry.code];
     if (!coord) return;
     const [x, y] = project(coord);
-    let prob = null;
-    if (result.status === "fulfilled") {
-      const v1 = result.value.estimatedProbabilities?.find(p => p.model === "V1")
-        ?? result.value.estimatedProbabilities?.[0];
-      if (v1 && v1.probability !== null && v1.probability !== undefined) prob = Number(v1.probability);
-    }
+    const prob = entry.probsByModel[currentMapModel] ?? null;
     const color = riskColor(prob);
-    const label = prob === null ? "no estimate" : `${(prob*100).toFixed(0)}% estimated probability (V1)`;
-    const selected = code === selectedCode ? " selected" : "";
-    markup += `<circle class="risk-dot risk-dot-anim${selected}" data-code="${code}"
+    const label = prob === null ? "no estimate" : `${(prob*100).toFixed(0)}% estimated probability (${currentMapModel})`;
+    const selected = entry.code === selectedCode ? " selected" : "";
+    markup += `<circle class="risk-dot risk-dot-anim${selected}" data-code="${entry.code}"
         cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="10" fill="${color}"
         style="animation-delay:${(i*15)}ms">
-        <title>${countryNames[code] ?? code}: ${label}</title>
+        <title>${countryNames[entry.code] ?? entry.code}: ${label}</title>
       </circle>`;
-    markup += `<text x="${x.toFixed(1)}" y="${(y-14).toFixed(1)}" class="chart-axis" text-anchor="middle" pointer-events="none">${code}</text>`;
+    markup += `<text x="${x.toFixed(1)}" y="${(y-14).toFixed(1)}" class="chart-axis" text-anchor="middle" pointer-events="none">${entry.code}</text>`;
   });
   svg.innerHTML = markup;
 
@@ -282,6 +317,7 @@ async function init() {
     }).join("");
 
     drawCoefficients(models);
+    renderMapToggle(models);
     await loadCountry(countrySelect.value);
     loadRiskMap(countrySelect.value); // fires ~28 requests; runs after first paint, not awaited
   } catch (error) {
